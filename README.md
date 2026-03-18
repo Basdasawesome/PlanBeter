@@ -40,3 +40,5 @@ We willen en verbeterde versie van de standaard datumprikker hebben. Naast dat j
 - [ ] **US11:** Als organisator wil ik een totaalbedrag aan een bevestigd event kunnen koppelen.
 - [ ] **US12:** Als deelnemer wil ik mijn deel van de kosten zien en een QR-code kunnen scannen voor terugbetaling.
 - [ ] **US13:** Als student wil ik het proces documenteren via de opgenomen Daily Standups en Retrospectives.
+
+--!>
