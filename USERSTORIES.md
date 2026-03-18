@@ -29,7 +29,7 @@
 | Zodat | ik de planning zo snel mogelijk kan maken. |
 | Prioriteit | Must Have |
 | Tijd | 2 dagen |
-| Acceptatiecriteria | - er is een knop die de planner in kan drukken om deelnemers te laten weten dat ze de poll nog moeten invullen<br> - de deelnemers die nog niet de poll in hebben gevult wanneer de planner op de knop drukt krijgen een mail met een reminder<br> - de planner kan instellen dat de deelnemers een bepaalde tijd voor de planning klaar moet zijn automatisch een reminder krijgen via de mail |
+| Acceptatiecriteria | - deelnemers die al wel de pol hebben ingevult moeten niet herinnerd worden<br> - de deelnemers die nog niet de poll in hebben gevult wanneer de planner op de knop drukt krijgen een mail met een reminder<br> - de planner kan instellen dat de deelnemers na een bepaalde tijd automatisch een reminder krijgen via de mail |
 | Scenario | Scenario:<br> Gegeven dat de planner over een week de planning klaar wil hebben<br> Wanneer 2 mensen nog niet de poll hebben ingevult<br> Dan kan de planner op de knop drukken<br> En worden de 2 mensen herinnerd dat ze de poll nog moeten invullen |
 
 <!--
