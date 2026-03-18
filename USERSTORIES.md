@@ -1,10 +1,6 @@
 # Userstories
 
 ## Userstories door Gerjan
-- Gebruikers
-  - Deelnemer
-    - Als deelnemer wil ik planningen kunnen bekijken zodat ik weet wanneer ik ergens moet zijn.
-    - Als deelnemer wil ik op polls kunnen stemmen zodat ik kan laten zien wanneer ik beschikbaar ben.
 
 ## Userstories Ezra
 
