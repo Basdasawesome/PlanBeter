@@ -2,6 +2,18 @@
 
 ---
 
+| **Titel**              | Enkel evenement plannen |
+|------------------------|------------------------|
+| **Als een**            | Gebruiker/gast |
+| **Wil ik**             | een datum vinden voor een eenmalig evenement |
+| **Zodat**              | de meeste deelnemers aanwezig kunnen zijn |
+| **Prioriteit**         | Must have |
+| **Tijd**               | 3 dagen |
+| **Acceptatiecriteria** | - De planner moet een aantal data opgeven als opties<br>- Deelnemers moeten hun beschikbaarheid kunnen invullen<br> - De resultaten moeten worden weergegeven met een percentage van de totale beschikbaarheid <br> - Een datum moet bevestigd kunnen worden<br> - Je kan deelnemers uitnodigen via e-mailadres |
+| **Scenario**           | **Scenario:**<br> Gegeven dat ik een evenement wil plannen<br> Wanneer ik meerdere data opties invoer en deel met de doelgroep<br> Dan kunnen de deelnemers hun beschikbaarheid opgeven<br> En ziet iedereen de beschikbaarheid als percentage van het totaal |
+
+---
+
 | **Titel**              | Planningen bekijken |
 |------------------------|------------------------|
 | **Als een**            | gebruiker/gast |
