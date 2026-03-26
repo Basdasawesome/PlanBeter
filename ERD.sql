@@ -2,7 +2,7 @@ CREATE TABLE `users` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) UNIQUE NOT NULL,
-  `password` varchar(255) NOT NULL,
+  `password` varchar(255),
   `remember_token` varchar(100),
   `created_at` timestamp,
   `updated_at` timestamp
@@ -17,12 +17,12 @@ CREATE TABLE `groups` (
 );
 
 CREATE TABLE `group_user` (
-  `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `group_id` bigint NOT NULL,
   `user_id` bigint NOT NULL,
   `role` varchar(255) NOT NULL DEFAULT 'member' COMMENT '''admin'' | ''member''',
   `created_at` timestamp,
-  `updated_at` timestamp
+  `updated_at` timestamp,
+  PRIMARY KEY (`group_id`, `user_id`)
 );
 
 CREATE TABLE `events` (
@@ -35,6 +35,7 @@ CREATE TABLE `events` (
   `recurrence_type` varchar(255) COMMENT '''daily'' | ''weekly'' | ''monthly'' | ''yearly''',
   `recurrence_ends_at` date,
   `is_confirmed` boolean NOT NULL DEFAULT false,
+  `selected_id` bigint,
   `created_at` timestamp,
   `updated_at` timestamp
 );
@@ -45,18 +46,17 @@ CREATE TABLE `date_options` (
   `date` date NOT NULL,
   `starts_at` time,
   `ends_at` time,
-  `is_chosen` boolean NOT NULL DEFAULT false,
   `created_at` timestamp,
   `updated_at` timestamp
 );
 
 CREATE TABLE `availabilities` (
-  `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `date_option_id` bigint NOT NULL,
   `user_id` bigint NOT NULL,
   `status` varchar(255) NOT NULL COMMENT '''yes'' | ''maybe'' | ''no''',
   `created_at` timestamp,
-  `updated_at` timestamp
+  `updated_at` timestamp,
+  PRIMARY KEY (`date_option_id`, `user_id`)
 );
 
 CREATE TABLE `reminders` (
@@ -104,6 +104,8 @@ ALTER TABLE `group_user` ADD FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 ALTER TABLE `events` ADD FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`);
 
 ALTER TABLE `events` ADD FOREIGN KEY (`created_by`) REFERENCES `users` (`id`);
+
+ALTER TABLE `events` ADD FOREIGN KEY (`selected_id`) REFERENCES `date_options` (`id`);
 
 ALTER TABLE `date_options` ADD FOREIGN KEY (`event_id`) REFERENCES `events` (`id`);
 
