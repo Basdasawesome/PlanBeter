@@ -2,22 +2,19 @@
 
 namespace App\Models;
 
+use Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Group;
-use App\Models\DateOption;
-use App\Models\Availability;
-use App\Models\Reminder;
-use App\Models\EventLog;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
 {
-    /** @use HasFactory<\Database\Factories\EventFactory> */
+    /** @use HasFactory<EventFactory> */
     use HasFactory;
 
     protected $fillable = [
+        'public_id',
         'group_id',
         'created_by',
         'title',
