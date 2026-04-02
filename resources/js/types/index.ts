@@ -6,6 +6,7 @@ export type * from './ui';
 
 export type Event = {
     id: number;
+    public_id: string | null;
     title: string;
     description: string | null;
     created_by: User;
