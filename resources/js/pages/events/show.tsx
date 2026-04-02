@@ -103,7 +103,7 @@ export default function EventsShow({ event }: { event: Event }) {
                                         {user.name} <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">You</span>
                                     </td>
                                     {event.date_options.map(option => {
-                                        const currentVote = option.availabilities.find(a => a.user_id === user.id)?.status;
+                                        const currentVote = option.availabilities.find(a => a.user_id === user.id)?.status ?? '';
 
                                         return (
                                             <td key={option.id} className="px-6 py-4 text-center">
