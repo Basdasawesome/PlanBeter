@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { CalendarIcon, LayoutGrid, Menu } from 'lucide-react';
+import { CalendarIcon, LayoutGrid, Menu, UsersIcon } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { Breadcrumbs } from '@/components/breadcrumbs';
@@ -35,6 +35,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn, toUrl } from '@/lib/utils';
 import { dashboard, login, register } from '@/routes';
 import { index as eventsIndex } from '@/routes/events';
+import { index as groupsIndex } from '@/routes/groups';
 import type { BreadcrumbItem, NavItem } from '@/types';
 
 type Props = {
@@ -51,6 +52,11 @@ const mainNavItems: NavItem[] = [
         title: 'Events',
         href: eventsIndex(),
         icon: CalendarIcon,
+    },
+    {
+        title: 'Groups',
+        href: groupsIndex(),
+        icon: UsersIcon,
     },
 ];
 
