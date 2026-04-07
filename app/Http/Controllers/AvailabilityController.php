@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event;
-use App\Models\Availability;
 use App\Http\Requests\StoreAvailabilityRequest;
+use App\Models\Availability;
+use App\Models\Event;
 use Illuminate\Http\RedirectResponse;
 
 class AvailabilityController extends Controller
@@ -13,18 +13,22 @@ class AvailabilityController extends Controller
     {
         $user = $request->user();
 
-        foreach ($request->validated('availabilities') as $availabilityData) {
-            Availability::updateOrCreate(
-                [
-                    'date_option_id' => $availabilityData['date_option_id'],
-                    'user_id' => $user->id,
-                ],
-                [
-                    'status' => $availabilityData['status'],
-                ]
-            );
+        if ($request->validated('status') === null) {
+            Availability::where('date_option_id', $request->validated('date_option_id'))->where('user_id', $user->id)->delete();
+
+            return redirect()->route('events.show', $event)->with('success', 'Availability removed');
         }
 
-        return redirect()->route('events.show', $event)->with('success', 'Availability saved!');
+        Availability::updateOrInsert(
+            [
+                'date_option_id' => $request->validated('date_option_id'),
+                'user_id' => $user->id,
+            ],
+            [
+                'status' => $request->validated('status'),
+            ]
+        );
+
+        return redirect()->route('events.show', $event)->with('success', 'Availability saved');
     }
 }

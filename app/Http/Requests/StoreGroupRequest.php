@@ -2,19 +2,18 @@
 
 namespace App\Http\Requests;
 
-use App\AvailabilityStatus;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
-class StoreAvailabilityRequest extends FormRequest
+class StoreGroupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return Auth::check();
     }
 
     /**
@@ -25,8 +24,7 @@ class StoreAvailabilityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'date_option_id' => ['required', 'exists:date_options,id'],
-            'status' => ['nullable', Rule::enum(AvailabilityStatus::class)],
+            'name' => ['required', 'string', 'max:255'],
         ];
     }
 }

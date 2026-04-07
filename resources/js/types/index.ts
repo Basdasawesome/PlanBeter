@@ -6,6 +6,7 @@ export type * from './ui';
 
 export type Event = {
     id: number;
+    public_id: string | null;
     title: string;
     description: string | null;
     created_by: User;
@@ -27,4 +28,12 @@ export type Availability = {
     status: 'yes' | 'maybe' | 'no';
 
     user: User;
+};
+
+export type Group = {
+    id: number;
+    name: string;
+    created_at: string;
+
+    users: User[];
 };

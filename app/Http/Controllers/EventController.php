@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Inertia\Response;
-use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StoreEventRequest;
+use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class EventController extends Controller
 {
@@ -54,7 +55,7 @@ class EventController extends Controller
             ]);
         }
 
-        return redirect()->route('events.show', $event);
+        return redirect()->route('events.show', $event)->with('success', 'Event created successfully');
     }
 
     public function show(Event $event): Response
@@ -66,5 +67,15 @@ class EventController extends Controller
             return Inertia::render('events/show', compact('event'));
         }
         return Inertia::render('events/show-guest', compact('event'));
+    }
+
+    public function share(Event $event): RedirectResponse
+    {
+        if (! $event->public_id) {
+            $event->public_id = Str::uuid();
+            $event->save();
+        }
+
+        return redirect()->route('events.show', $event)->with('success', 'Created share link successfully');
     }
 }
