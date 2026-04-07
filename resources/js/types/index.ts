@@ -29,3 +29,11 @@ export type Availability = {
 
     user: User;
 };
+
+export type Group = {
+    id: number;
+    name: string;
+    created_at: string;
+
+    users: User[];
+};
