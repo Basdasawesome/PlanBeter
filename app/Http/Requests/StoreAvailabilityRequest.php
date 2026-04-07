@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\AvailabilityStatus;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreAvailabilityRequest extends FormRequest
@@ -19,14 +20,13 @@ class StoreAvailabilityRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'availabilities' => ['required', 'array'],
-            'availabilities.*.date_option_id' => ['required', 'exists:date_options,id'],
-            'availabilities.*.status' => ['required', Rule::enum(AvailabilityStatus::class)],
+            'date_option_id' => ['required', 'exists:date_options,id'],
+            'status' => ['nullable', Rule::enum(AvailabilityStatus::class)],
         ];
     }
 }
