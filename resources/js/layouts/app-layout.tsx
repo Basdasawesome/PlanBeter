@@ -1,8 +1,8 @@
 import { Head } from "@inertiajs/react";
 import { Toaster } from "sonner";
+import ToastHandler from "@/components/ToastHandler";
 import { cn } from "@/lib/utils";
 import AppHeader from "./Header";
-import ToastHandler from "@/components/ToastHandler";
 
 export default function AppLayout({ title, children, fullWidth = false }: { title?: string, children: React.ReactNode, fullWidth?: boolean }) {
     return (

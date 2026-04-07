@@ -10,6 +10,8 @@ Route::inertia('/', 'welcome', [
     'canRegister' => Features::enabled(Features::registration()),
 ])->name('home');
 
+Route::get('/share/{event:public_id}', [EventController::class, 'show'])->name('events.share');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
 
@@ -18,6 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', 'create')->name('create');
         Route::post('/store', 'store')->name('store');
         Route::prefix('{event}')->group(function () {
+            Route::post('/share', [EventController::class, 'share'])->name('share.create');
             Route::get('/', 'show')->name('show');
             Route::post('/availability/update', [AvailabilityController::class, 'update'])->name('availability.update');
         });

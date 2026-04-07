@@ -1,4 +1,4 @@
-import { usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
@@ -13,7 +13,7 @@ const ToastHandler = () => {
         };
     };
 
-    useEffect(() => {
+    const handleFlash = () => {
         if (flash?.success) {
             toast.success(flash.success, {
                 duration: 2000,
@@ -43,6 +43,20 @@ const ToastHandler = () => {
                 duration: 2000,
             });
         }
+    };
+
+    useEffect(() => {
+        const unsubscribe = router.on('navigate', () => {
+            handleFlash();
+        });
+
+        return () => unsubscribe();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        handleFlash();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [flash]);
 
     return null;

@@ -8,7 +8,7 @@ import { create } from '@/routes/events';
 import { show } from '@/routes/events';
 import type { Event } from '@/types';
 
-export default function EventsIndex({ events }: { events: Event[] }) {
+export default function Index({ events }: { events: Event[] }) {
     return (
         <AppLayout title="Events">
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
