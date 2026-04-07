@@ -5,14 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEventRequest;
 use App\Models\Event;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class EventController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index(Request $request): Response
     {
         $user = $request->user();
@@ -56,9 +60,13 @@ class EventController extends Controller
 
     public function show(Event $event): Response
     {
+        $this->authorize("view", Event::class);
         $event->load(['dateOptions.availabilities.user', 'createdBy']);
 
-        return Inertia::render('events/show', compact('event'));
+        if (Auth::check()) {
+            return Inertia::render('events/show', compact('event'));
+        }
+        return Inertia::render('events/show-guest', compact('event'));
     }
 
     public function share(Event $event): RedirectResponse
