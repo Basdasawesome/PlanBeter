@@ -9,9 +9,13 @@ use Inertia\Response;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StoreEventRequest;
 use Carbon\Carbon;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index(Request $request): Response
     {
         $user = $request->user();
@@ -55,8 +59,12 @@ class EventController extends Controller
 
     public function show(Event $event): Response
     {
+        $this->authorize("view", Event::class);
         $event->load(['dateOptions.availabilities.user', 'createdBy']);
 
-        return Inertia::render('events/show', compact('event'));
+        if (Auth::check()) {
+            return Inertia::render('events/show', compact('event'));
+        }
+        return Inertia::render('events/show-guest', compact('event'));
     }
 }
