@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\GroupController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -23,7 +24,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/', 'show')->name('show');
             Route::put('/', 'update')->name('update');
             Route::get('/edit', 'edit')->name('edit');
+            Route::get('/overview', 'overview')->name('overview');
             Route::post('/availability/update', [AvailabilityController::class, 'update'])->name('availability.update');
+        });
+    });
+
+    Route::controller(GroupController::class)->name('groups.')->prefix('groups')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/store', 'store')->name('store');
+        Route::prefix('{group}')->group(function () {
+            Route::get('/', 'show')->name('show');
+            Route::get('/edit', 'edit')->name('edit');
         });
     });
 });

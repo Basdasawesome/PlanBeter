@@ -14,7 +14,7 @@ export default function AppLayout({ title, children, fullWidth = false }: { titl
                 <Head title={title} />
             )}
             <AppHeader />
-            <main className={cn("mx-auto flex h-full w-full flex-1 flex-col gap-4 rounded-xl", fullWidth ? "max-w-full" : "max-w-7xl")}>
+            <main className={cn("mx-auto flex h-full w-full flex-1 flex-col gap-4 rounded-xl ", fullWidth ? "max-w-full" : "max-w-7xl")}>
                 {children}
             </main>
 
