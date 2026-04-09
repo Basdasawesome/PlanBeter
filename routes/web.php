@@ -21,6 +21,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('{event}')->group(function () {
             Route::post('/share', [EventController::class, 'share'])->name('share.create');
             Route::get('/', 'show')->name('show');
+            Route::put('/', 'update')->name('update');
+            Route::get('/edit', 'edit')->name('edit');
             Route::post('/availability/update', [AvailabilityController::class, 'update'])->name('availability.update');
         });
     });

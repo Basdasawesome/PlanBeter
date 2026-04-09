@@ -57,7 +57,7 @@ export default function Index({ events }: { events: Event[] }) {
                                     </div>
                                 </CardContent>
                                 <CardFooter>
-                                    <Button asChild variant="secondary" className="w-full">
+                                    <Button asChild className="w-full">
                                         <Link href={show({ event: event.id })}>
                                             View Event
                                         </Link>

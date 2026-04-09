@@ -6,7 +6,7 @@ import AppHeader from "./Header";
 
 export default function AppLayout({ title, children, fullWidth = false }: { title?: string, children: React.ReactNode, fullWidth?: boolean }) {
     return (
-        <div className="flex min-h-screen w-full flex-col">
+        <div className="flex min-h-screen w-full flex-col bg-primary/5">
             <ToastHandler />
             <Toaster position="top-center" expand={true} richColors />
 

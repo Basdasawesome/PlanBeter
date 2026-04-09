@@ -46,7 +46,7 @@
 | **Zodat**              | de planning up-to-date blijft als er iets verandert |
 | **Prioriteit**         | Must Have |
 | **Tijd**               | 2 dagen |
-| **Acceptatiecriteria** | - Alleen de aanmaker of een evenment-beheerder van de planning kan een datum wijzigen<br>- Na het wijzigen zien alle deelnemers direct de nieuwe datum<br>- Het systeem slaat de vorige datum op als geschiedenis, zodat wijzigingen traceerbaar zijn<br>- Deelnemers ontvangen een melding als een datum wordt gewijzigd |
+| **Acceptatiecriteria** | - Alleen de aanmaker of een evenment-beheerder van de planning kan een datum wijzigen<br>- Na het wijzigen zien alle deelnemers direct de nieuwe datum<br>- Deelnemers ontvangen een melding als een datum wordt gewijzigd |
 | **Scenario**           | **Scenario:**<br> Gegeven dat het teamuitje verzet moet worden<br> Wanneer de aanmaker de planning opent en een nieuwe datum kiest<br> Dan zien alle andere deelnemers de bijgewerkte datum<br> En ontvangen zij een melding dat de planning is gewijzigd |
 
 ---

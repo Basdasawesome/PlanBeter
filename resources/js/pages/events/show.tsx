@@ -1,16 +1,17 @@
-import { router, useForm, usePage } from '@inertiajs/react';
-import { CheckIcon, HelpCircleIcon, XIcon } from 'lucide-react';
+import { Link, router, usePage } from '@inertiajs/react';
+import { CheckIcon, EditIcon, HelpCircleIcon, XIcon } from 'lucide-react';
 import ShareDialog from '@/components/ShareDialog';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import AppLayout from '@/layouts/app-layout';
+import { edit } from '@/routes/events';
 import { update } from '@/routes/events/availability';
 import type { Event } from '@/types';
 import type { Auth } from '@/types/auth';
 
 type AvailabilityFormStatus = '' | 'yes' | 'maybe' | 'no';
 
-export default function EventsShow({ event }: { event: Event }) {
+export default function Show({ event }: { event: Event }) {
     const auth = usePage().props.auth as Auth;
     const user = auth.user;
 
@@ -47,7 +48,15 @@ export default function EventsShow({ event }: { event: Event }) {
                             Created by {event.created_by.name}
                         </p>
                     </div>
+                    <div className="flex items-center gap-2">
                     <ShareDialog event={event} />
+                    <Button asChild>
+                        <Link href={edit(event.id)}>
+                            <EditIcon className="mr-2 h-4 w-4" />
+                            Edit
+                        </Link>
+                    </Button>
+                    </div>
                 </div>
 
                 <div className="bg-card border rounded-xl overflow-hidden">
