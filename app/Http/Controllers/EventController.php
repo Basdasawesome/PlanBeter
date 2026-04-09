@@ -60,7 +60,7 @@ class EventController extends Controller
 
     public function show(Event $event): Response
     {
-        $this->authorize("view", Event::class);
+        $this->authorize("view", $event);
         $event->load(['dateOptions.availabilities.user', 'createdBy']);
 
         if (Auth::check()) {
@@ -77,5 +77,13 @@ class EventController extends Controller
         }
 
         return redirect()->route('events.show', $event)->with('success', 'Created share link successfully');
+    }
+
+    public function overview(Event $event): Response
+    {
+        $this->authorize("view", $event);
+        $event->load(['dateOptions.availabilities.user', 'createdBy']);
+
+        return Inertia::render('events/overview', compact('event'));
     }
 }
