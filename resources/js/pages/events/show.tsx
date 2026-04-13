@@ -21,10 +21,6 @@ export default function EventsShow({ event }: { event: Event }) {
         });
     }
 
-    event.date_options.map(option => (
-        console.log(option)
-    ));
-
     return (
         <AppLayout title={event.title}>
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6 max-w-3xl mx-auto w-full">
@@ -42,19 +38,18 @@ export default function EventsShow({ event }: { event: Event }) {
                 </div>
                 <div>
                     {event.date_options.map(option => {
-                        const currentVote = option.availabilities.find(a => a.user_id === user.id)?.status;
-                        const test = new Date(option.date).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+                        const currentVote = option.availabilities.find(a => a.user_id === user.id)?.status ?? undefined;
+                        const showDate = new Date(option.date).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
 
                         return (
                             <div className="rounded-lg bg-background border-2 border-grey px-4 py-2 mb-2 flex items-center justify-between">
-                                <p className="font-semibold capitalize">{test}</p>
+                                <p className="font-semibold capitalize">{showDate}</p>
                                 <ToggleGroup
                                     type="single"
                                     value={currentVote}
                                     onValueChange={(value) => {
                                         updateAvailability(option.id, (value ?? '') as AvailabilityFormStatus);
                                     }}
-                                    className=""
                                 >
 
                                     <ToggleGroupItem value="yes" aria-label="Yes" className="data-[state=on]:bg-green-100 data-[state=on]:text-green-700 dark:data-[state=on]:bg-green-900/30 dark:data-[state=on]:text-green-400 rounded-lg mx-1">
