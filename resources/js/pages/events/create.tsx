@@ -1,4 +1,5 @@
 import { useForm } from '@inertiajs/react';
+import { startOfDay } from 'date-fns';
 import { TrashIcon } from 'lucide-react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { store } from '@/routes/events';
 
-export default function EventsCreate() {
+export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         description: '',
@@ -62,7 +63,7 @@ export default function EventsCreate() {
                                 <InputError message={errors.description} />
                             </div>
 
-                            {data.date_options.map((option, index) => (
+                            {data.date_options.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((option, index) => (
                                 <div key={index} className="flex flex-col sm:flex-row gap-4 items-start sm:items-end p-4 border rounded-lg bg-card">
                                     <div className="grid gap-2 flex-1 w-full">
                                         <Label>Date</Label>
@@ -104,6 +105,7 @@ export default function EventsCreate() {
                                 mode="multiple"
                                 selected={data.date_options.map((option) => new Date(option.date))}
                                 onSelect={(dates) => setData('date_options', dates?.map((date) => ({ date: date, starts_at: '', ends_at: '' })) || [])}
+                                disabled={{ before: startOfDay(new Date()) }}
                                 className="w-full border-2 rounded-xl p-4"
                             />
                         </div>

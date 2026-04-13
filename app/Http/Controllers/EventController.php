@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEventRequest;
+use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -67,6 +68,38 @@ class EventController extends Controller
             return Inertia::render('events/show', compact('event'));
         }
         return Inertia::render('events/show-guest', compact('event'));
+    }
+
+    public function edit(Event $event): Response
+    {
+        $event->load(['dateOptions']);
+
+        return Inertia::render('events/edit', compact('event'));
+    }
+
+    public function update(UpdateEventRequest $request, Event $event): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        $event->update([
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? null,
+        ]);
+
+        if (isset($validated['date_options'])) {
+            foreach ($validated['date_options'] as $option) {
+                if ($option['deleted'] ?? false) {
+                    $event->dateOptions()->where('date', Carbon::parse($option['date'])->format('Y-m-d'))->delete();
+                } else {
+                    $event->dateOptions()->updateOrCreate(
+                        ['date' => Carbon::parse($option['date'])->format('Y-m-d')],
+                        ['starts_at' => $option['starts_at'] ?? null, 'ends_at' => $option['ends_at'] ?? null]
+                    );
+                }
+            }
+        }
+
+        return redirect()->route('events.show', $event)->with('success', 'Event updated successfully');
     }
 
     public function share(Event $event): RedirectResponse
