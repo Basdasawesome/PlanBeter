@@ -35,5 +35,14 @@ export type Group = {
     name: string;
     created_at: string;
 
-    users: User[];
+    users: (User & {
+        pivot: {
+            role: string;
+        }
+    })[] ;
+    pivot: {
+            role: string;
+        }
 };
+
+export type Roles = string[];

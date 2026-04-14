@@ -1,5 +1,5 @@
-import { Link } from '@inertiajs/react';
-import { CalendarIcon, PlusIcon, Users2Icon } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { Award, CalendarIcon, PlusIcon, Users2Icon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { edit } from '@/routes/groups';
 import type { Group } from '@/types';
 
 export default function GroupsIndex({ groups }: { groups: Group[] }) {
+
     return (
         <AppLayout title="groups">
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
@@ -50,8 +51,12 @@ export default function GroupsIndex({ groups }: { groups: Group[] }) {
                                 </CardHeader>
                                 <CardContent className="flex-1">
                                     <div className="flex items-center text-sm text-muted-foreground">
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        <Users2Icon className="mr-2 h-4 w-4" />
                                         {group.users?.length || 0} members
+                                    </div>
+                                    <div className="flex items-center text-sm text-muted-foreground">
+                                        <Award className="mr-2 h-4 w-4" />
+                                        <p className='capitalize'>Role: {group.pivot.role}</p>
                                     </div>
                                 </CardContent>
                                 <CardFooter className='gap-2'>
@@ -60,11 +65,13 @@ export default function GroupsIndex({ groups }: { groups: Group[] }) {
                                             View Group
                                         </Link>
                                     </Button>
-                                    <Button asChild variant="secondary" className="w-full">
+                                    {group.pivot.role === 'owner' && (
+                                        <Button asChild variant="secondary" className="w-full">
                                         <Link href={edit(group.id)}>
                                              Edit Group
                                         </Link>
                                     </Button>
+                                    )}
                                 </CardFooter>
                             </Card>
                         ))}

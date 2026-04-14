@@ -33,6 +33,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('{group}')->group(function () {
             Route::get('/', 'show')->name('show');
             Route::get('/edit', 'edit')->name('edit');
+            Route::put('/update', 'update')->name('update');
+            Route::post('/attach-user', 'attachUser')->name('attachUser');
+            Route::delete('/detach-user/{user}', 'detachUser')->name('detachUser');
+            Route::put('/change-role', 'changeRole')->name('changeRole');
         });
     });
 });
