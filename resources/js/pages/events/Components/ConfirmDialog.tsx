@@ -8,11 +8,14 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import type { Event } from '@/types';
+import type { Event, Group } from '@/types';
 
 type EventFormData = {
     title: string;
     description: string;
+    group_id: number | null;
+    recurrence_type: string | null;
+    recurrence_ends_at: string | null;
     date_options: Array<{
         date: Date;
         starts_at: string | null;
@@ -26,10 +29,11 @@ type ConfirmDialogProps = {
     processing: boolean;
     event: Event;
     data: EventFormData;
+    groups: Group[];
     onConfirm: () => void;
 };
 
-export default function ConfirmDialog({ open, onOpenChange, processing, event, data, onConfirm }: ConfirmDialogProps) {
+export default function ConfirmDialog({ open, onOpenChange, processing, event, data, groups, onConfirm }: ConfirmDialogProps) {
 
     const deletedDateOptions = event.date_options.filter((option) => !data.date_options.some((d) => d.date.getTime() === new Date(option.date).getTime()));
     const addedDateOptions = data.date_options.filter((option) => !event.date_options.some((d) => new Date(d.date).getTime() === option.date.getTime()));
@@ -55,10 +59,31 @@ export default function ConfirmDialog({ open, onOpenChange, processing, event, d
                             </div>
                         )}
 
-                        {event.description !== data.description.trim() && (
+                        {event.description && event.description !== data.description.trim() && (
                             <div>
                                 <p>Description</p>
                                 <p><span className="line-through  decoration-destructive decoration-2">{event.description}</span> → {data.description.trim()}</p>
+                            </div>
+                        )}
+
+                        {event.group_id !== data.group_id && (
+                            <div>
+                                <p>Group</p>
+                                <p><span className="line-through  decoration-destructive decoration-2">{groups.find((group) => group.id === event.group_id)?.name ?? "No group"}</span> → {groups.find((group) => group.id === data.group_id)?.name ?? "No group"}</p>
+                            </div>
+                        )}
+
+                        {event.recurrence_type !== data.recurrence_type && (
+                            <div>
+                                <p>Recurrence type</p>
+                                <p><span className="line-through  decoration-destructive decoration-2 capitalize">{event.recurrence_type ?? "No recurrence type"}</span> → {(!data.recurrence_type || data.recurrence_type === "no") ? "No recurrence type" : data.recurrence_type.charAt(0).toUpperCase() + data.recurrence_type.slice(1)}</p>
+                            </div>
+                        )}
+
+                        {event.recurrence_ends_at !== data.recurrence_ends_at && (
+                            <div>
+                                <p>Recurrence end date</p>
+                                <p><span className="line-through  decoration-destructive decoration-2">{event.recurrence_ends_at ?? "No end date"}</span> → {data.recurrence_ends_at ?? "No end date"}</p>
                             </div>
                         )}
                     </div>
@@ -144,7 +169,7 @@ export default function ConfirmDialog({ open, onOpenChange, processing, event, d
 
                 <DialogFooter>
                     <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={processing}>
-                        Cancel
+                        Back
                     </Button>
                     <Button type="button" disabled={processing} onClick={onConfirm}>
                         {processing ? 'Saving…' : 'Save changes'}

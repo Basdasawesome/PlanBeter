@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\GroupRole;
-use App\Http\Requests\StoregroupRequest;
+use App\Http\Requests\StoreGroupRequest;
 use App\Models\Group;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -38,7 +38,7 @@ class GroupController extends Controller
         return Inertia::render('groups/edit', compact('group'));
     }
 
-    public function store(StoregroupRequest $request): RedirectResponse
+    public function store(StoreGroupRequest $request): RedirectResponse
     {
         $user = $request->user();
 
