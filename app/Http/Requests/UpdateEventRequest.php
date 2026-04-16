@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\RecurrenceType;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateEventRequest extends FormRequest
 {
@@ -12,7 +14,7 @@ class UpdateEventRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('update', $this->event);
     }
 
     /**
@@ -25,6 +27,9 @@ class UpdateEventRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            'group_id' => ['nullable', 'exists:groups,id'],
+            'recurrence_type' => ['nullable', 'string', Rule::in(RecurrenceType::cases())],
+            'recurrence_ends_at' => ['nullable', 'date:Y-m-d'],
             'date_options' => ['sometimes', 'array'],
             'date_options.*.date' => ['required', 'date:Y-m-d'],
             'date_options.*.starts_at' => ['nullable', 'date_format:H:i'],

@@ -32,7 +32,7 @@ Voor elk formulier dat gegevens naar de server stuurt, wordt een aparte Form Req
 
 ### Databasewijzigingen via migrations
 
-Elke wijziging aan de databasestructuur (nieuwe tabel, kolom, index of foreign key) wordt vastgelegd in een nieuwe migration in `database/migrations/`.
+Elke wijziging aan de databasestructuur (nieuwe tabel, kolom, index of foreign key) wordt vastgelegd in een nieuwe migration in `database/migrations/`. Elke colom die toegevoegd word aan een bestaande tabel moet een `after()` bevatten zodat je altijd als laatste twee colomen created_at en updated_at hebt.
 
 ### Database-queries via Eloquent of Query Builder
 
@@ -57,6 +57,10 @@ Elke nieuwe feature of bugfix krijgt een eigen branch. Er wordt nooit direct op 
 ### Pull Requests en code review
 
 Elke branch wordt samengevoegd via een Pull Request. De PR wordt beoordeeld door minimaal één iemand anders voordat hij gemerged wordt.
+
+#### Conflicts
+
+Als je een pull request wilt aanvragen en hij geeft aan dat er conflicten zijn dan ga je samen met iemand anders zitten en kijken wat de conflicten zijn en los je die samen op.
 
 ### Commitberichten
 

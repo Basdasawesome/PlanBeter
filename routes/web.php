@@ -24,6 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/', 'show')->name('show');
             Route::put('/', 'update')->name('update');
             Route::get('/edit', 'edit')->name('edit');
+            Route::delete('/', 'destroy')->name('destroy');
             Route::get('/overview', 'overview')->name('overview');
             Route::post('/availability/update', [AvailabilityController::class, 'update'])->name('availability.update');
         });

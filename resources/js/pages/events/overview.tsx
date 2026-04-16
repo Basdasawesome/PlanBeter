@@ -64,7 +64,7 @@ export function ChartBarHorizontal(title: string, description: string | null, ch
 export default function Overview({ event }: { event: Event }) {
     const chartData = event.date_options.map(option => {
         let count = 0;
-        const month = new Date(option.date).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+        const month = new Date(option.date).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
         option.availabilities.forEach(a => {
             if (a.status === 'yes') {
@@ -82,7 +82,7 @@ export default function Overview({ event }: { event: Event }) {
 
     return (
         <AppLayout title={event.title}>
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6 max-w-3xl mx-auto w-full">
+            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6 max-w-7xl mx-auto w-full">
                 {ChartBarHorizontal(event.title, event.description, chartData)}
             </div>
         </AppLayout>

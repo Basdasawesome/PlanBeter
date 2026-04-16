@@ -7,23 +7,19 @@ import AppLayout from '@/layouts/app-layout';
 import { edit, overview } from '@/routes/events';
 import { update } from '@/routes/events/availability';
 import type { Event } from '@/types';
-import type { Auth } from '@/types/auth';
 
 type AvailabilityFormStatus = '' | 'yes' | 'maybe' | 'no';
 
 export default function Show({ event }: { event: Event }) {
-    const auth = usePage().props.auth as Auth;
-    const user = auth.user;
+    const { user } = usePage().props.auth;
 
     function updateAvailability(dateOptionId: number, newStatus: AvailabilityFormStatus): void {
         router.post(update.url({ event: event.id }), {
             date_option_id: dateOptionId, status: newStatus,
+        }, {
+            preserveScroll: true,
         });
     }
-
-    event.date_options.map(option => (
-        console.log(option)
-    ));
 
     return (
         <AppLayout title={event.title}>
@@ -35,22 +31,26 @@ export default function Show({ event }: { event: Event }) {
                             <p className="text-muted-foreground">{event.description}</p>
                         )}
                         <p className="text-sm text-muted-foreground">
-                            Participant: {user.name}
+                            Participant: {user?.name}
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
-                    <ShareDialog event={event} />
-                    <Button asChild>
-                        <Link href={edit(event.id)}>
-                            <EditIcon className="mr-2 h-4 w-4" />
-                            Edit
-                        </Link>
-                    </Button>
+                        {event.created_by.id === user?.id && (
+                            <>
+                                <ShareDialog event={event} />
+                                <Button asChild>
+                                    <Link href={edit(event.id)}>
+                                        <EditIcon className="mr-2 h-4 w-4" />
+                                        Edit
+                                    </Link>
+                                </Button>
+                            </>
+                        )}
                     </div>
                 </div>
                 <div>
                     {event.date_options.map(option => {
-                        const currentVote = option.availabilities.find(a => a.user_id === user.id)?.status;
+                        const currentVote = option.availabilities.find(a => a.user_id === user?.id)?.status;
                         const test = new Date(option.date).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
 
                         return (
@@ -65,16 +65,15 @@ export default function Show({ event }: { event: Event }) {
                                     className=""
                                 >
 
-                                    <ToggleGroupItem value="yes" aria-label="Yes" className="data-[state=on]:bg-green-100 data-[state=on]:text-green-700 dark:data-[state=on]:bg-green-900/30 dark:data-[state=on]:text-green-400 rounded-lg mx-1">
+                                    <ToggleGroupItem value="yes" aria-label="Yes" className="data-[state=on]:bg-success/80 data-[state=on]:text-success-foreground rounded-lg mx-1">
                                         Ja<CheckIcon className="h-4 w-4" />
                                     </ToggleGroupItem>
-                                    <ToggleGroupItem value="maybe" aria-label="Maybe" className="data-[state=on]:bg-yellow-100 data-[state=on]:text-yellow-700 dark:data-[state=on]:bg-yellow-900/30 dark:data-[state=on]:text-yellow-400 rounded-lg mx-1">
+                                    <ToggleGroupItem value="maybe" aria-label="Maybe" className="data-[state=on]:bg-warning/80 data-[state=on]:text-warning-foreground rounded-lg mx-1">
                                         Misschien<HelpCircleIcon className="h-4 w-4" />
                                     </ToggleGroupItem>
-                                    <ToggleGroupItem value="no" aria-label="No" className="data-[state=on]:bg-red-100 data-[state=on]:text-red-700 dark:data-[state=on]:bg-red-900/30 dark:data-[state=on]:text-red-400 rounded-lg mx-1">
+                                    <ToggleGroupItem value="no" aria-label="No" className="data-[state=on]:bg-destructive/80 data-[state=on]:text-destructive-foreground rounded-lg mx-1">
                                         Nee<XIcon className="h-4 w-4" />
                                     </ToggleGroupItem>
-
                                 </ToggleGroup>
                             </div>
                         );
