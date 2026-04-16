@@ -22,7 +22,10 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-export function ChartBarHorizontal(title: string, description: string | null, chartData: Array<{ month: string; availability: number; }>) {
+const barHeight = 40 // px per dag
+const minHeight = 200 // minimum hoogte
+
+export function ChartBarHorizontal(title: string, description: string | null, chartData: Array<{ month: string; availability: number; }>, chartHeight: number) {
     return (
         <Card>
             <CardHeader>
@@ -30,7 +33,10 @@ export function ChartBarHorizontal(title: string, description: string | null, ch
                 <CardDescription>{description}</CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={chartConfig}>
+                <ChartContainer
+                    config={chartConfig}
+                    style={{ height: chartHeight }}
+                    className="w-full">
                     <BarChart
                         accessibilityLayer
                         data={chartData}
@@ -80,10 +86,12 @@ export default function Overview({ event }: { event: Event }) {
         };
     });
 
+    const chartHeight = Math.max(chartData.length * barHeight, minHeight)
+
     return (
         <AppLayout title={event.title}>
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6 max-w-7xl mx-auto w-full">
-                {ChartBarHorizontal(event.title, event.description, chartData)}
+            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6 max-w-3xl mx-auto w-full">
+                {ChartBarHorizontal(event.title, event.description, chartData, chartHeight)}
             </div>
         </AppLayout>
     )

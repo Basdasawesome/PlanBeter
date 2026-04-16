@@ -51,7 +51,7 @@ class Event extends Model
 
     public function dateOptions(): HasMany
     {
-        return $this->hasMany(DateOption::class, 'event_id');
+        return $this->hasMany(DateOption::class, 'event_id')->orderBy("date");
     }
 
     public function availabilities(): HasManyThrough
