@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AttendanceSubmittedEvent;
 use App\Http\Requests\StoreAvailabilityRequest;
 use App\Models\Availability;
 use App\Models\Event;
@@ -19,7 +20,7 @@ class AvailabilityController extends Controller
             return redirect()->route('events.show', $event)->with('success', 'Availability removed');
         }
 
-        Availability::updateOrInsert(
+        $availability = Availability::updateOrCreate(
             [
                 'date_option_id' => $request->validated('date_option_id'),
                 'user_id' => $user->id,
@@ -28,6 +29,8 @@ class AvailabilityController extends Controller
                 'status' => $request->validated('status'),
             ]
         );
+
+        event(new AttendanceSubmittedEvent($availability));
 
         return redirect()->route('events.show', $event)->with('success', 'Availability saved');
     }

@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useEcho } from "@laravel/echo-react"
+import { useEffect, useMemo, useState } from "react"
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
 import {
     Card,
@@ -23,7 +24,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import AppLayout from '@/layouts/app-layout';
-import type { Event } from '@/types';
+import type { Event, Availability } from '@/types';
 
 const chartConfig = {
     desktop: {
@@ -36,41 +37,73 @@ const barHeight = 40 // px per dag
 const minHeight = 200 // minimum hoogte
 
 export default function Overview({ event }: { event: Event }) {
-    const getDefault = event.date_options.map(option => {
-        let count = 0;
-        const month = new Date(option.date).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    const [dateOptions, setDateOptions] = useState(event.date_options);
 
-        option.availabilities.forEach(a => {
-            if (a.status === 'yes') {
-                count++;
-            } else if (a.status === 'maybe') {
-                count += 0.5;
+    useEffect(() => {
+        // Reset local state when switching to a different event.
+        setDateOptions(event.date_options);
+    }, [event.id, event.date_options]);
+
+    const [sorting, setSorting] = useState('SortByDate');
+
+    useEcho(`event.${event.id}.attendance`, '.attendance.submitted', (e: { availability: Availability }) => {
+        setDateOptions((prevDateOptions) => {
+            const { date_option_id, user_id, status } = e.availability;
+
+            const dateOptionIndex = prevDateOptions.findIndex(option => option.id === date_option_id);
+
+            if (dateOptionIndex === -1) {
+                return prevDateOptions;
             }
-        });
 
-        return {
-            month,
-            availability: count
-        };
+            const nextDateOptions = [...prevDateOptions];
+            const dateOption = nextDateOptions[dateOptionIndex];
+
+            const availabilityIndex = dateOption.availabilities.findIndex(a => a.user_id === user_id);
+            const nextAvailabilities =
+                availabilityIndex === -1
+                    ? [...dateOption.availabilities, e.availability]
+                    : dateOption.availabilities.map(a => a.user_id === user_id ? { ...a, status } : a);
+
+            nextDateOptions[dateOptionIndex] = {
+                ...dateOption,
+                availabilities: nextAvailabilities,
+            };
+
+            return nextDateOptions;
+        });
     });
 
-    const [chartData, setChartData] = useState(getDefault);
+    const chartData = useMemo<{ month: string, availability: number }[]>(() => {
+        const getDefault = dateOptions.map(option => {
+            let count = 0;
+            const month = new Date(option.date).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
-    const sortDates = (value: string) => {
-        switch (value) {
+            option.availabilities.forEach(a => {
+                if (a.status === 'yes') {
+                    count++;
+                } else if (a.status === 'maybe') {
+                    count += 0.5;
+                }
+            });
+
+            return {
+                month,
+                availability: count
+            };
+        });
+
+        switch (sorting) {
             case "Ascending":
-                setChartData([...chartData].sort((a, b) => b.availability - a.availability));
-                break;
+                return [...getDefault].sort((a, b) => b.availability - a.availability);
             case "Descending":
-                setChartData([...chartData].sort((a, b) => a.availability - b.availability));
-                break;
+                return [...getDefault].sort((a, b) => a.availability - b.availability);
             case "SortByDate":
-                setChartData(getDefault);
-                break;
+                return getDefault;
             default:
-                break;
+                return getDefault;
         }
-    }
+    }, [sorting, dateOptions]);
 
     const chartHeight = Math.max(chartData.length * barHeight, minHeight)
 
@@ -84,10 +117,9 @@ export default function Overview({ event }: { event: Event }) {
                             <CardDescription>{event.description}</CardDescription>
                         </div>
                         <div>
-                            <Select onValueChange={(value) => {
-                                sortDates(value);
-                            }}
-                                defaultValue="SortByDate"
+                            <Select
+                                value={sorting}
+                                onValueChange={(value) => setSorting(value)}
                             >
                                 <SelectTrigger className="w-full max-w-48">
                                     <SelectValue placeholder="Sort by date" />
