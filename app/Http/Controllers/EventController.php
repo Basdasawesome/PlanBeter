@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
+use App\Models\Availability;
 use App\Models\Event;
 use App\RecurrenceType;
 use Carbon\Carbon;
@@ -21,6 +22,8 @@ class EventController extends Controller
 
     public function index(Request $request): Response
     {
+        $availability = Availability::first();
+
         $user = $request->user();
 
         $events = Event::with(['createdBy', 'selected'])

@@ -32,6 +32,7 @@ export type DateOption = {
 export type Availability = {
     id: number;
     user_id: number;
+    date_option_id: number;
     status: 'yes' | 'maybe' | 'no';
 
     user: User;

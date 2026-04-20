@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('availabilities', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('date_option_id')->constrained('date_options');
             $table->foreignId('user_id')->constrained('users');
             $table->string('status');
             $table->timestamps();
-            $table->primary(['date_option_id', 'user_id']);
         });
     }
 
