@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('availabilities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('date_option_id')->constrained('date_options');
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('date_option_id')->constrained('date_options')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('status');
             $table->timestamps();
         });

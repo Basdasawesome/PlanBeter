@@ -22,8 +22,8 @@ export default function Edit({ event, groups, recurrenceTypes }: { event: Event,
     const { data, setData, put, processing, errors, isDirty, transform } = useForm({
         title: event.title,
         description: event.description ?? '',
-        recurrence_type: event.recurrence_type ?? "no",
-        recurrence_ends_at: event.recurrence_ends_at ?? null,
+        recurrence_type: event.recurrence_type ?? "no" as string | null,
+        recurrence_ends_at: event.recurrence_ends_at ?? null as string | null,
         group_id: event.group_id ?? null,
         date_options: event.date_options.map((option) => ({
             date: new Date(option.date),
@@ -34,11 +34,8 @@ export default function Edit({ event, groups, recurrenceTypes }: { event: Event,
 
     const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
-        transform((data) => ({
-            ...data,
-            recurrence_type: data.recurrence_type === "no" ? null : data.recurrence_type,
-            recurrence_ends_at: data.recurrence_type === "no" ? null : data.recurrence_ends_at,
-        }));
+        setData('recurrence_type', data.recurrence_type === "no" ? null : data.recurrence_type);
+        setData('recurrence_ends_at', data.recurrence_type === "no" ? null : data.recurrence_ends_at);
         setConfirmOpen(true);
     };
 

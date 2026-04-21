@@ -15,15 +15,19 @@ class AvailabilityController extends Controller
         $user = $request->user();
 
         if ($request->validated('status') === null) {
-            Availability::where('date_option_id', $request->validated('date_option_id'))->where('user_id', $user->id)->delete();
+            Availability::where('date_option_id', $request->validated('date_option_id'))->where('user_id', $user->id ?? session('user_id'))->delete();
 
-            return redirect()->route('events.show', $event)->with('success', 'Availability removed');
+            if ($user) {
+                return redirect()->route('events.show', $event)->with('success', 'Availability removed');
+            } else {
+                return redirect()->route('events.guest.show', $event)->with('success', 'Availability removed');
+            }
         }
 
         $availability = Availability::updateOrCreate(
             [
                 'date_option_id' => $request->validated('date_option_id'),
-                'user_id' => $user->id,
+                'user_id' => $user?->id ?? session('user_id'),
             ],
             [
                 'status' => $request->validated('status'),
@@ -32,6 +36,10 @@ class AvailabilityController extends Controller
 
         event(new AttendanceSubmittedEvent($availability));
 
+        if ($user) {
         return redirect()->route('events.show', $event)->with('success', 'Availability saved');
+        } else {
+            return redirect()->route('events.guest.show', $event)->with('success', 'Availability saved');
+        }
     }
 }

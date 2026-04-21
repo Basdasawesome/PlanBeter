@@ -2,26 +2,27 @@
 
 namespace App\Events;
 
-use App\Models\Availability;
+use App\Models\Event;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class AttendanceSubmittedEvent implements ShouldBroadcast
+class EventEditEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(public Availability $availability) {}
+    public function __construct(public Event $event) {}
 
     public function broadcastAs(): string
     {
-        return 'attendance.submitted';
+        return 'event.edited';
     }
+
 
     /**
      * Get the channels the event should broadcast on.
@@ -31,14 +32,7 @@ class AttendanceSubmittedEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('event.'.$this->availability->event->id),
-        ];
-    }
-
-    public function broadcastWith(): array
-    {
-        return [
-            'availability' => $this->availability,
+            new Channel('event.'.$this->event->id),
         ];
     }
 }

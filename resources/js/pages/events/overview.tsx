@@ -1,4 +1,5 @@
-import { useEcho } from "@laravel/echo-react"
+import { router } from "@inertiajs/react"
+import { useEchoPublic } from "@laravel/echo-react"
 import { useEffect, useMemo, useState } from "react"
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
 import {
@@ -46,7 +47,7 @@ export default function Overview({ event }: { event: Event }) {
 
     const [sorting, setSorting] = useState('SortByDate');
 
-    useEcho(`event.${event.id}.attendance`, '.attendance.submitted', (e: { availability: Availability }) => {
+    useEchoPublic(`event.${event.id}`, '.attendance.submitted', (e: { availability: Availability }) => {
         setDateOptions((prevDateOptions) => {
             const { date_option_id, user_id, status } = e.availability;
 
@@ -71,6 +72,12 @@ export default function Overview({ event }: { event: Event }) {
             };
 
             return nextDateOptions;
+        });
+    });
+
+    useEchoPublic(`event.${event.id}`, '.event.edited', () => {
+        router.reload({
+            only: ['event'],
         });
     });
 
