@@ -11,7 +11,12 @@ Route::inertia('/', 'welcome', [
     'canRegister' => Features::enabled(Features::registration()),
 ])->name('home');
 
-Route::get('/share/{event:public_id}', [EventController::class, 'show'])->name('events.share');
+Route::controller(EventController::class)->name('events.guest.')->prefix('share/{event:public_id}')->group(function () {
+    Route::get('/', 'show')->name('show');
+    Route::post('/join', 'join')->name('join');
+    Route::get('/overview', 'overview')->name('overview');
+    Route::post('/availability/update', [AvailabilityController::class, 'update'])->name('availability.update');
+});
 
 Route::get('/register-group/{email}', [GroupController::class, 'register'])->name('groups.register');
 Route::post('/register-group', [GroupController::class, 'registerStore'])->name('groups.registerStore');
@@ -26,6 +31,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('{event}')->group(function () {
             Route::post('/share', [EventController::class, 'share'])->name('share.create');
             Route::get('/', 'show')->name('show');
+            Route::put('/', 'update')->name('update');
+            Route::get('/edit', 'edit')->name('edit');
+            Route::delete('/', 'destroy')->name('destroy');
+            Route::get('/overview', 'overview')->name('overview');
             Route::post('/availability/update', [AvailabilityController::class, 'update'])->name('availability.update');
         });
     });

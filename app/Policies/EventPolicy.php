@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Auth\Access\Response;
 
 class EventPolicy
 {
@@ -14,19 +13,20 @@ class EventPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Event $event): bool
+    public function view(?User $user, Event $event): bool
     {
         if ($event->public_id) {
             return true;
-        } else if (Auth::id() === $event->created_by) {
+        } elseif (Auth::id() === $event->created_by) {
             return true;
         }
+
         return false;
     }
 
@@ -35,7 +35,7 @@ class EventPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -43,7 +43,7 @@ class EventPolicy
      */
     public function update(User $user, Event $event): bool
     {
-        return false;
+        return Auth::check() && $user->id === $event->created_by;
     }
 
     /**
@@ -51,7 +51,7 @@ class EventPolicy
      */
     public function delete(User $user, Event $event): bool
     {
-        return false;
+        return Auth::check() && $user->id === $event->created_by;
     }
 
     /**

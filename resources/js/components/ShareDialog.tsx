@@ -1,6 +1,7 @@
 import { router } from "@inertiajs/react";
 import { Loader2Icon, Share2Icon } from "lucide-react";
 import { useState } from "react";
+import { create } from "@/routes/events/share";
 import type { Event } from "@/types";
 import Clipboard from "./Clipboard";
 import { Button } from "./ui/button";
@@ -21,7 +22,7 @@ export default function ShareDialog({ event }: { event: Event }) {
 
         setIsGenerating(true);
 
-        router.post(`/events/${event.id}/share`, {}, {
+        router.post(create.url(event.id), {}, {
             preserveState: true,
             preserveScroll: true,
             showProgress: false,
@@ -79,7 +80,7 @@ export default function ShareDialog({ event }: { event: Event }) {
                     </div>
                 </div>
                 <DialogFooter className="sm:justify-start">
-                    <DialogClose asChild>
+                    <DialogClose asChild className="ml-auto">
                         <Button type="button" variant="secondary">
                             Close
                         </Button>

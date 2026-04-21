@@ -1,14 +1,17 @@
-import { Link } from '@inertiajs/react';
-import { CalendarIcon, PlusIcon } from 'lucide-react';
+import { Link, router } from '@inertiajs/react';
+import { AwardIcon, CalendarIcon, PlusIcon, RepeatIcon, TrashIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { create } from '@/routes/events';
-import { show } from '@/routes/events';
-import type { Event } from '@/types';
+import { create, show, destroy } from '@/routes/events';
+import type { DateOption, Event } from '@/types';
 
-export default function Index({ events }: { events: Event[] }) {
+export default function Index({ events }: { events: (Event & { fristOption: DateOption; lastOption: DateOption })[] }) {
+    const deleteEvent = (id: number) => {
+        router.delete(destroy(id));
+    };
+
     return (
         <AppLayout title="Events">
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
@@ -43,21 +46,36 @@ export default function Index({ events }: { events: Event[] }) {
                 ) : (
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {events.map((event) => (
-                            <Card key={event.id} className="flex flex-col">
+                            <Card key={event.id} className="flex flex-col relative group">
+                                <button type="button" onClick={() => deleteEvent(event.id)} className="absolute top-4 right-4">
+                                    <TrashIcon className="size-4 text-destructive hover:text-destructive/80 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                                </button>
                                 <CardHeader>
                                     <CardTitle>{event.title}</CardTitle>
                                     <CardDescription className="line-clamp-2">
                                         {event.description || 'No description provided.'}
                                     </CardDescription>
                                 </CardHeader>
-                                <CardContent className="flex-1">
+                                <CardContent className="flex-1 space-y-2">
                                     <div className="flex items-center text-sm text-muted-foreground">
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {event.date_options?.length || 0} date options
+                                        <CalendarIcon className="mr-2 size-4" />
+                                        {new Date(event.fristOption.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })} - {new Date(event.lastOption.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}
                                     </div>
+                                    {event.selected && (
+                                        <div className="flex items-center text-sm text-muted-foreground">
+                                            <AwardIcon className="mr-2 size-4" />
+                                            {new Date(event.selected.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}
+                                        </div>
+                                    )}
+                                    {event.recurrence_type && (
+                                        <div className="flex items-center text-sm text-muted-foreground capitalize">
+                                            <RepeatIcon className="mr-2 size-4" />
+                                            {event.recurrence_type}
+                                        </div>
+                                    )}
                                 </CardContent>
                                 <CardFooter>
-                                    <Button asChild variant="secondary" className="w-full">
+                                    <Button asChild className="w-full">
                                         <Link href={show({ event: event.id })}>
                                             View Event
                                         </Link>

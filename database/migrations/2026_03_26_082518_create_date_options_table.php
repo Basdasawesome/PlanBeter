@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('date_options', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained('events');
+            $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
             $table->date('date');
             $table->time('starts_at')->nullable();
             $table->time('ends_at')->nullable();

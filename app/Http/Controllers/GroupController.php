@@ -9,8 +9,8 @@ use App\Http\Requests\DetachMembersGroupRequest;
 use App\Http\Requests\EditGroupRequest;
 use App\Http\Requests\GroupRegisterRequest;
 use App\Http\Requests\SendMailRequest;
-use App\Http\Requests\StoregroupRequest;
 use App\Mail\InviteMember;
+use App\Http\Requests\StoreGroupRequest;
 use App\Models\Group;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -66,7 +66,7 @@ class GroupController extends Controller
         return Inertia::render('groups/edit', compact('group', 'roles', 'users'));
     }
 
-    public function store(StoregroupRequest $request): RedirectResponse
+    public function store(StoreGroupRequest $request): RedirectResponse
     {
         $user = $request->user();
 

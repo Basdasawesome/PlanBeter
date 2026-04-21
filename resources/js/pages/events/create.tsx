@@ -1,25 +1,59 @@
 import { useForm } from '@inertiajs/react';
+import { format, parse, startOfDay } from 'date-fns';
 import { TrashIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { store } from '@/routes/events';
+import type { Group } from '@/types';
 
-export default function EventsCreate() {
-    const { data, setData, post, processing, errors } = useForm({
+type FromData = {
+    title: string;
+    description: string;
+    group_id: number | null;
+    recurrence_type: string | null;
+    recurrence_ends_at: string | null;
+    date_options: {
+        date: Date;
+        starts_at: string | null;
+        ends_at: string | null;
+    }[];
+}
+
+export default function Create({ groups, recurrenceTypes }: { groups: Group[], recurrenceTypes: string[] }) {
+    const { data, setData, post, processing, errors, transform } = useForm<FromData>({
         title: '',
         description: '',
-        date_options: [
-            { date: new Date(), starts_at: '', ends_at: '' }
-        ],
+        group_id: null,
+        recurrence_type: null,
+        recurrence_ends_at: null,
+        date_options: [],
     });
 
     const submit = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
-        post(store.url());
+        transform((data) => ({
+            ...data,
+            recurrence_type: data.recurrence_type === "no" ? null : data.recurrence_type,
+            recurrence_ends_at: data.recurrence_type === "no" ? null : data.recurrence_ends_at,
+            date_options: data.date_options.map((option) => ({
+                ...option,
+                date: format(option.date, 'yyyy-MM-dd'),
+            })),
+        }));
+        post(store.url(), {
+            onError: (errors) => {
+                if (errors.date_options) {
+                    toast.error(errors.date_options);
+                }
+            },
+        });
     };
 
     const removeDateOption = (index: number) => {
@@ -62,7 +96,66 @@ export default function EventsCreate() {
                                 <InputError message={errors.description} />
                             </div>
 
-                            {data.date_options.map((option, index) => (
+                            <div className="space-y-2">
+                                <Label>Group (optional)</Label>
+                                <Select
+                                    value={data.group_id?.toString() ?? undefined}
+                                    onValueChange={(value) => setData('group_id', parseInt(value))}
+                                    disabled={groups.length === 0}
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select a group" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {groups.map((group) => (
+                                            <SelectItem key={group.id} value={group.id.toString()}>{group.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={errors.group_id} />
+                            </div>
+
+                            {data.group_id && (
+                                <div className="space-y-2">
+                                    <Label>Recurring (optional)</Label>
+                                    <Select
+                                        value={data.recurrence_type?.toString() ?? "no"}
+                                        onValueChange={(value) => setData('recurrence_type', value)}
+                                        disabled={groups.length === 0}
+                                    >
+                                        <SelectTrigger className="w-full capitalize">
+                                            <SelectValue placeholder="Select a recurrence type" />
+                                        </SelectTrigger>
+                                        <SelectContent className="capitalize">
+                                            {recurrenceTypes.map((type) => (
+                                                <SelectItem key={type} value={type}>{type}</SelectItem>
+                                            ))}
+                                            <SelectItem value="no">No</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError message={errors.group_id} />
+                                </div>
+
+                            )}
+
+                            {data.group_id && data.recurrence_type && data.recurrence_type !== 'no' && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="recurrence_ends_at">Recurrence ends on (optional)</Label>
+                                    <DatePicker
+                                        date={data.recurrence_ends_at ? parse(data.recurrence_ends_at, 'yyyy-MM-dd', new Date()) : undefined}
+                                        onDateChange={(date) => setData('recurrence_ends_at', date ? format(date, 'yyyy-MM-dd') : null)}
+                                    />
+                                    <InputError message={errors.recurrence_ends_at} />
+                                </div>
+                            )}
+
+                            <p>{data.date_options.length} date options selected</p>
+
+                            {data.date_options.length === 0 && (
+                                <p className="text-muted-foreground text-sm text-center py-4">No date options selected</p>
+                            )}
+
+                            {data.date_options.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((option, index) => (
                                 <div key={index} className="flex flex-col sm:flex-row gap-4 items-start sm:items-end p-4 border rounded-lg bg-card">
                                     <div className="grid gap-2 flex-1 w-full">
                                         <Label>Date</Label>
@@ -72,7 +165,7 @@ export default function EventsCreate() {
                                         <Label>Start Time (optional)</Label>
                                         <Input
                                             type="time"
-                                            value={option.starts_at}
+                                            value={option.starts_at || ''}
                                             onChange={(e) => setData('date_options', data.date_options.map((option, i) => i === index ? { ...option, starts_at: e.target.value } : option))}
                                         />
                                         <InputError message={errors[`date_options.${index}.starts_at`]} />
@@ -81,7 +174,7 @@ export default function EventsCreate() {
                                         <Label>End Time (optional)</Label>
                                         <Input
                                             type="time"
-                                            value={option.ends_at}
+                                            value={option.ends_at || ''}
                                             onChange={(e) => setData('date_options', data.date_options.map((option, i) => i === index ? { ...option, ends_at: e.target.value } : option))}
                                         />
                                         <InputError message={errors[`date_options.${index}.ends_at`]} />
@@ -103,7 +196,27 @@ export default function EventsCreate() {
                             <Calendar
                                 mode="multiple"
                                 selected={data.date_options.map((option) => new Date(option.date))}
-                                onSelect={(dates) => setData('date_options', dates?.map((date) => ({ date: date, starts_at: '', ends_at: '' })) || [])}
+                                onSelect={(dates) => {
+                                    const currentOptionsByDate = new Map(
+                                        data.date_options.map((option) => [new Date(option.date).toDateString(), option]),
+                                    );
+
+                                    setData(
+                                        'date_options',
+                                        dates?.map((date) => {
+                                            const existingOption = currentOptionsByDate.get(date.toDateString());
+
+                                            return existingOption
+                                                ? {
+                                                    date,
+                                                    starts_at: existingOption.starts_at,
+                                                    ends_at: existingOption.ends_at,
+                                                }
+                                                : { date, starts_at: null, ends_at: null };
+                                        }) || [],
+                                    );
+                                }}
+                                disabled={{ before: startOfDay(new Date()) }}
                                 className="w-full border-2 rounded-xl p-4"
                             />
                         </div>

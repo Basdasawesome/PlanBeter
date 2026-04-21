@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\RecurrenceType;
 use Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Event extends Model
 {
@@ -19,23 +21,23 @@ class Event extends Model
         'created_by',
         'title',
         'description',
-        'is_recurring',
         'recurrence_type',
         'recurrence_ends_at',
-        'is_confirmed',
+        'recurrence_last_duplicated_at',
+        'recurring_events_count',
         'selected_id',
     ];
 
     protected $casts = [
         'recurrence_ends_at' => 'date:Y-m-d',
-        'is_confirmed' => 'boolean',
-        'is_recurring' => 'boolean',
+        'recurrence_last_duplicated_at' => 'date:Y-m-d',
+        'recurrence_type' => RecurrenceType::class,
     ];
 
-    // public function group(): BelongsTo
-    // {
-    //     return $this->belongsTo(Group::class, 'group_id');
-    // }
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'group_id');
+    }
 
     public function createdBy(): BelongsTo
     {
@@ -49,12 +51,12 @@ class Event extends Model
 
     public function dateOptions(): HasMany
     {
-        return $this->hasMany(DateOption::class, 'event_id');
+        return $this->hasMany(DateOption::class, 'event_id')->orderBy('date');
     }
 
-    public function availabilities(): HasMany
+    public function availabilities(): HasManyThrough
     {
-        return $this->hasMany(Availability::class, 'date_option_id');
+        return $this->hasManyThrough(Availability::class, DateOption::class, 'event_id', 'date_option_id', 'id', 'id');
     }
 
     // public function reminders(): HasMany
