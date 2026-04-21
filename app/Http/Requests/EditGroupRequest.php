@@ -13,7 +13,7 @@ class EditGroupRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check();
+        return $this->user()->can('update', $this->group);
     }
 
     /**

@@ -2,20 +2,17 @@
 
 namespace App\Http\Requests;
 
-use App\GroupRole;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 
-class ChangeRoleRequest extends FormRequest
+class GroupRegisterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()->can('update', $this->group);
+        return true;
     }
 
     /**
@@ -26,8 +23,9 @@ class ChangeRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'role' => [Rule::enum(GroupRole::class)],
-            'user' => ['required', 'exists:users,id']
+            'password' => ['max:255', 'required', 'min:8'],
+            'name' => ['max:255', 'required'],
+            'email' => ['max:255', 'email']
         ];
     }
 }

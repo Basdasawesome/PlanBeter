@@ -6,14 +6,14 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class AttachMembersGroupRequest extends FormRequest
+class SendMailRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return Auth::check();
+        return $this->user()->can('update', $this->group);
     }
 
     /**
@@ -24,7 +24,7 @@ class AttachMembersGroupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['max:255', 'email'],
+            'email' => ['max:255', 'email', 'required'],
         ];
     }
 }

@@ -1,8 +1,17 @@
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import type { Group } from '@/types';
+import type { Group, User } from '@/types';
 
-export default function GroupsShow({ group }: { group: Group }) {
+type GroupsShowProps = {
+    group: Group, 
+    users: (User & {
+        pivot: {
+        invited: boolean
+    }
+})[]
+}
+
+export default function GroupsShow({ group, users}: GroupsShowProps ) {
 console.log(group.users);
 
     return (
@@ -19,7 +28,7 @@ console.log(group.users);
                             </TableHead>
                         </TableRow>
                     </TableHeader>
-                {group.users?.map((user) => (
+                {users?.map((user) => (
                     <TableRow key={user.id} className="flex flex-col">
                         <TableBody>
                             <TableRow>

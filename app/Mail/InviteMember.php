@@ -9,6 +9,7 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 class InviteMember extends Mailable
 {
@@ -17,9 +18,12 @@ class InviteMember extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    protected $group;
+    protected $email;
+    public function __construct($group, $email)
     {
-        //
+        $this->group = $group;
+        $this->email = $email;
     }
 
     /**
@@ -37,8 +41,15 @@ class InviteMember extends Mailable
      */
     public function content(): Content
     {
+        $encodedEmail = urlencode($this->email);
+
         return new Content(
-            markdown: 'views.',
+            markdown: 'mail.invite-member',
+            with: [
+                'groupName' => $this->group['name'],
+                'groupId' => $this->group['id'],
+                'email' => $encodedEmail,
+            ]
         );
     }
 

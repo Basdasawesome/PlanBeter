@@ -7,23 +7,33 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { update,detachUser, attachUser, changeRole as changeRoleRoute } from '@/routes/groups';
+import { update,detachUser, changeRole as changeRoleRoute, sendMail } from '@/routes/groups';
 import type { Group, Roles, User } from '@/types';
-export default function GroupsEdit({ group, roles }: { group: Group, roles: Roles }) {
+
+type GroupsEditProps = {
+    group: Group, 
+    roles: Roles, 
+    users: (User & {
+        pivot: {
+        invited: boolean
+    }
+})[]
+}
+export default function GroupsEdit({ group, roles, users }: GroupsEditProps ) {
     const [email, setEmail] = useState('');
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, put, processing, errors } = useForm({
         name: group.name,
         email: ''
     });
 
     const submit = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
-        post(update.url(group));
+        put(update.url(group));
     }; 
 
-    const addUser = () => {
-        router.post(attachUser.url({group: group.id}), {email: email}  ,{
+    const inviteUser = () => {
+        router.get(sendMail.url({group: group.id}), {email: email}  ,{
              preserveScroll: true,
              onSuccess: () => setEmail(''),
     })
@@ -42,6 +52,7 @@ export default function GroupsEdit({ group, roles }: { group: Group, roles: Role
     })
     };
 
+console.log(users)
 
     return (
         <AppLayout title={group.name}>
@@ -73,10 +84,10 @@ export default function GroupsEdit({ group, roles }: { group: Group, roles: Role
                                     placeholder="Email"
                                 />
                                 <InputError message={errors.email} />
-                            <Button type='button' onClick={() => addUser()}>Lid Uitnodigen</Button>
+                            <Button type='button' onClick={() => inviteUser()}>Lid Uitnodigen</Button>
                             </div>
                                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                {group.users.map((user) => (
+                                {users.map((user) => (
                                     <div key={user.id} className="flex flex-col">
                                         <header>
                                             <h2>{user.email}</h2>
