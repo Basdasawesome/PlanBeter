@@ -1,5 +1,6 @@
 import { router } from "@inertiajs/react"
 import { useEchoPublic } from "@laravel/echo-react"
+import { CheckIcon, HelpCircleIcon, XIcon } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
 import {
@@ -130,7 +131,7 @@ export default function Overview({ event }: { event: Event }) {
     return (
         <AppLayout title={event.title}>
             <div className="grid grid-cols-2 gap-6 rounded-xl p-4 md:p-6 max-w-7xl">
-                <Card>
+                <Card className="min-w-0">
                     <CardHeader className="flex flex-row justify-between">
                         <div>
                             <CardTitle>{event.title}</CardTitle>
@@ -158,14 +159,16 @@ export default function Overview({ event }: { event: Event }) {
                     <CardContent>
                         <ChartContainer
                             config={chartConfig}
-                            style={{ height: chartHeight }}
+                            style={{ height: chartHeight, width: '100%' }}
                             className="w-full">
                             <BarChart
                                 accessibilityLayer
                                 data={chartData}
                                 layout="vertical"
+                                width={undefined}
                                 margin={{
                                     left: 15,
+                                    right: 15
                                 }}
                             >
                                 <XAxis type="number" dataKey="availability" hide />
@@ -205,9 +208,13 @@ export default function Overview({ event }: { event: Event }) {
 
                                         return (
                                             <td key={user} className="p-2 text-center">
-                                                <span className={`inline-block w-3 h-3 rounded-full ${entry?.status === 'yes' ? 'bg-green-500' :
-                                                    entry?.status === 'maybe' ? 'bg-yellow-500' : 'bg-red-500'
-                                                    }`} />
+                                                {entry?.status === 'yes' ? (
+                                                    <CheckIcon className="h-4 w-4 text-green-500 inline" />
+                                                ) : entry?.status === 'maybe' ? (
+                                                    <HelpCircleIcon className="h-4 w-4 text-yellow-500 inline" />
+                                                ) : (
+                                                    <XIcon className="h-4 w-4 text-red-500 inline" />
+                                                )}
                                             </td>
                                         );
                                     })}
