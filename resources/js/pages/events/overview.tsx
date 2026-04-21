@@ -107,9 +107,22 @@ export default function Overview({ event }: { event: Event }) {
 
     const chartHeight = Math.max(chartData.length * barHeight, minHeight)
 
+    const overview: Record<string, [string, string][]> = {};
+
+    dateOptions.forEach(date => {
+        overview[date.date] = [];
+        date.availabilities.forEach(option => {
+            overview[date.date].push([option.user.name, option.status]);
+        });
+    });
+
+    console.log(overview);
+
+    const users = [...new Set(dateOptions.flatMap(d => d.availabilities.map(a => a.user.name)))];
+
     return (
         <AppLayout title={event.title}>
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6 max-w-3xl mx-auto w-full">
+            <div className="grid grid-cols-2 gap-6 rounded-xl p-4 md:p-6 max-w-7xl">
                 <Card>
                     <CardHeader className="flex flex-row justify-between">
                         <div>
@@ -165,7 +178,37 @@ export default function Overview({ event }: { event: Event }) {
                             </BarChart>
                         </ChartContainer>
                     </CardContent>
-                </Card >
+                </Card>
+                <div className="overflow-auto">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr>
+                                <th className="text-left p-2">Date</th>
+                                {users.map(user => (
+                                    <th key={user} className="p-2 text-center">{user}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {dateOptions.map(date => (
+                                <tr key={date.date} className="border-t">
+                                    <td className="p-2 font-medium">{date.date}</td>
+                                    {users.map(user => {
+                                        const entry = date.availabilities.find(a => a.user.name === user);
+
+                                        return (
+                                            <td key={user} className="p-2 text-center">
+                                                <span className={`inline-block w-3 h-3 rounded-full ${entry?.status === 'yes' ? 'bg-green-500' :
+                                                    entry?.status === 'maybe' ? 'bg-yellow-500' : 'bg-red-500'
+                                                    }`} />
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </AppLayout>
     )

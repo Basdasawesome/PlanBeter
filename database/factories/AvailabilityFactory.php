@@ -2,7 +2,10 @@
 
 namespace Database\Factories;
 
+use App\AvailabilityStatus;
 use App\Models\Availability;
+use App\Models\DateOption;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +21,9 @@ class AvailabilityFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'date_option_id' => DateOption::inRandomOrder()->first(),
+            'user_id' => User::inRandomOrder()->first(),
+            'status' => fake()->randomelement(AvailabilityStatus::cases()),
         ];
     }
 }

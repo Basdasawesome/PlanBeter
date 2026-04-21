@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\DateOption;
+use App\Models\Event;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +20,8 @@ class DateOptionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'event_id' => Event::inRandomOrder()->first(),
+            'date' => fake()->date('Y-m-d'),
         ];
     }
 }
