@@ -3,6 +3,7 @@
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\InviteMembersController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -16,6 +17,9 @@ Route::controller(EventController::class)->name('events.guest.')->prefix('share/
     Route::get('/overview', 'overview')->name('overview');
     Route::post('/availability/update', [AvailabilityController::class, 'update'])->name('availability.update');
 });
+
+Route::get('/register-group/{email}', [GroupController::class, 'register'])->name('groups.register');
+Route::post('/register-group', [GroupController::class, 'registerStore'])->name('groups.registerStore');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
@@ -42,6 +46,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('{group}')->group(function () {
             Route::get('/', 'show')->name('show');
             Route::get('/edit', 'edit')->name('edit');
+            Route::put('/update', 'update')->name('update');
+            Route::get('/send-mail', 'sendMail')->name('sendMail');
+            Route::post('/attach-user', 'attachUser')->name('attachUser');
+            Route::delete('/detach-user/{user}', 'detachUser')->name('detachUser');
+            Route::put('/change-role', 'changeRole')->name('changeRole');
         });
     });
 });

@@ -1,15 +1,23 @@
 import { Link } from '@inertiajs/react';
-import { CalendarIcon, PlusIcon, Users2Icon } from 'lucide-react';
+import { Award, PlusIcon, Users2Icon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { create } from '@/routes/groups';
+import { attachUser, create } from '@/routes/groups';
 import { show } from '@/routes/groups';
 import { edit } from '@/routes/groups';
 import type { Group } from '@/types';
 
-export default function GroupsIndex({ groups }: { groups: Group[] }) {
+type GroupsIndexProps = {
+    groups: (Group & {
+        users_count: number
+    })[], 
+    invitedToGroups: Group[],
+}
+
+export default function GroupsIndex({ groups, invitedToGroups }:  GroupsIndexProps) {
+
     return (
         <AppLayout title="groups">
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6">
@@ -25,6 +33,25 @@ export default function GroupsIndex({ groups }: { groups: Group[] }) {
                         </Link>
                     </Button>
                 </div>
+
+                {invitedToGroups && invitedToGroups.length !== 0 && (
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 bg-warning/70 p-4 rounded-xl text-black">
+                        {invitedToGroups.map((group) => (
+                            <div key={group.id} className="flex flex-col items-center bg-warning/90 rounded-xl p-1">
+                                <div className='flex items-center'>
+                                    <h2> Je bent uitgenodigt voor de groep {group.name}</h2>
+                                </div>
+                                <div className='gap-2'>
+                                    <Button asChild variant="secondary" className="w-full bg-transparent hover:bg-transparent">
+                                        <Link href={attachUser({ group: group })}>
+                                            Meedoen aan groep
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
 
                 {groups.length === 0 ? (
                     <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed p-8 text-center animate-in fade-in-50">
@@ -50,8 +77,12 @@ export default function GroupsIndex({ groups }: { groups: Group[] }) {
                                 </CardHeader>
                                 <CardContent className="flex-1">
                                     <div className="flex items-center text-sm text-muted-foreground">
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {group.users?.length || 0} members
+                                        <Users2Icon className="mr-2 h-4 w-4" />
+                                        {group.users_count || 0} members
+                                    </div>
+                                    <div className="flex items-center text-sm text-muted-foreground">
+                                        <Award className="mr-2 h-4 w-4" />
+                                        <p className='capitalize'>Role: {group.pivot.role}</p>
                                     </div>
                                 </CardContent>
                                 <CardFooter className='gap-2'>
@@ -60,11 +91,13 @@ export default function GroupsIndex({ groups }: { groups: Group[] }) {
                                             View Group
                                         </Link>
                                     </Button>
+                                    {group.pivot.role === 'owner' && (
                                     <Button asChild variant="secondary" className="w-full">
                                         <Link href={edit(group.id)}>
                                              Edit Group
                                         </Link>
                                     </Button>
+                                    )}
                                 </CardFooter>
                             </Card>
                         ))}

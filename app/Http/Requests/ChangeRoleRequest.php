@@ -2,18 +2,20 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Group;
+use App\GroupRole;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
-class StoreGroupRequest extends FormRequest
+class ChangeRoleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()->can('create', Group::class);
+        return $this->user()->can('update', $this->group);
     }
 
     /**
@@ -24,7 +26,8 @@ class StoreGroupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'role' => [Rule::enum(GroupRole::class)],
+            'user' => ['required', 'exists:users,id']
         ];
     }
 }

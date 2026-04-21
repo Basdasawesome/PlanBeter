@@ -1,10 +1,18 @@
-import { Button } from '@headlessui/react';
-import { Link } from 'lucide-react';
-import { edit } from '@/actions/App/Http/Controllers/GroupController';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import type { Group } from '@/types';
+import type { Group, User } from '@/types';
 
-export default function GroupsShow({ group }: { group: Group }) {
+type GroupsShowProps = {
+    group: Group, 
+    users: (User & {
+        pivot: {
+        invited: boolean
+    }
+})[]
+}
+
+export default function GroupsShow({ group, users}: GroupsShowProps ) {
+console.log(group.users);
 
     return (
         <AppLayout title={group.name}>
@@ -12,12 +20,26 @@ export default function GroupsShow({ group }: { group: Group }) {
                 <div className="space-y-2">
                     <h1 className="text-3xl font-bold tracking-tight">{group.name}</h1>
                 </div>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>
+                                Groepsleden:
+                            </TableHead>
+                        </TableRow>
+                    </TableHeader>
+                {users?.map((user) => (
+                    <TableRow key={user.id} className="flex flex-col">
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>{user.name}</TableCell>
+                                <TableCell>{user.email}</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </TableRow>
+                ))}
+            </Table>
             </div>
-                <Button asChild variant="secondary" className="w-full">
-                    <Link href={edit({ group: group.id })}>
-                         Edit Group
-                    </Link>
-                </Button>
         </AppLayout>
     );
 }
