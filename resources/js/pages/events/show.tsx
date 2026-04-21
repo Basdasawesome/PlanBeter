@@ -6,23 +6,35 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import AppLayout from '@/layouts/app-layout';
 import { edit, overview } from '@/routes/events';
 import { update } from '@/routes/events/availability';
+import { overview as overviewGuest } from '@/routes/events/guest';
+import { update as updateGuest } from '@/routes/events/guest/availability';
 import type { Event } from '@/types';
+import GuestDialog from './Components/GuestDialog';
 
 type AvailabilityFormStatus = '' | 'yes' | 'maybe' | 'no';
 
-export default function Show({ event }: { event: Event }) {
+export default function Show({ event, guestName, guestId }: { event: Event, guestName?: string, guestId?: number }) {
     const { user } = usePage().props.auth;
 
     function updateAvailability(dateOptionId: number, newStatus: AvailabilityFormStatus): void {
-        router.post(update.url({ event: event.id }), {
-            date_option_id: dateOptionId, status: newStatus,
-        }, {
-            preserveScroll: true,
-        });
+        if (guestId) {
+            router.post(updateGuest.url({ public_id: event.public_id ?? '' }), {
+                date_option_id: dateOptionId, status: newStatus,
+            }, {
+                preserveScroll: true,
+            });
+        } else {
+            router.post(update.url({ event: event.id }), {
+                date_option_id: dateOptionId, status: newStatus,
+            }, {
+                preserveScroll: true,
+            });
+        }
     }
 
     return (
         <AppLayout title={event.title}>
+            {!user && !guestId && <GuestDialog event={event} />}
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6 max-w-3xl mx-auto w-full">
                 <div className="flex items-center justify-between">
                     <div className="space-y-2">
@@ -31,11 +43,11 @@ export default function Show({ event }: { event: Event }) {
                             <p className="text-muted-foreground">{event.description}</p>
                         )}
                         <p className="text-sm text-muted-foreground">
-                            Participant: {user?.name}
+                            Participant: {user?.name ?? guestName ?? 'Guest'}
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
-                        {event.created_by.id === user?.id && (
+                    {event.created_by.id === user?.id && (
                             <>
                                 <ShareDialog event={event} />
                                 <Button asChild>
@@ -50,7 +62,7 @@ export default function Show({ event }: { event: Event }) {
                 </div>
                 <div>
                     {event.date_options.map(option => {
-                        const currentVote = option.availabilities.find(a => a.user_id === user.id)?.status ?? undefined;
+                        const currentVote = option.availabilities.find(a => a.user_id === (user?.id ?? guestId))?.status ?? undefined;
                         const showDate = new Date(option.date).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
 
                         return (
@@ -80,7 +92,7 @@ export default function Show({ event }: { event: Event }) {
                 </div>
                 <div className="flex justify-end items-center">
                     <Button asChild className="border-2 border-gray bg-primary px-4 py-2 rounded-lg flex flex-row items-center text-white">
-                        <Link href={overview(event)}>
+                        <Link href={guestId ? overviewGuest(event.public_id ?? '') : overview(event.id)}>
                             Volgende <ArrowRight className="h-5 w-5" />
                         </Link>
                     </Button>

@@ -2,6 +2,6 @@
 
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::channel('event.{event}.attendance', function () {
+Broadcast::channel('event.{event}', function () {
     return true;
 });

@@ -80,7 +80,7 @@ export default function ShareDialog({ event }: { event: Event }) {
                     </div>
                 </div>
                 <DialogFooter className="sm:justify-start">
-                    <DialogClose asChild>
+                    <DialogClose asChild className="ml-auto">
                         <Button type="button" variant="secondary">
                             Close
                         </Button>

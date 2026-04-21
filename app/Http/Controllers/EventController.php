@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\EventEditEvent;
+use App\Http\Requests\JoinRequest;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Availability;
 use App\Models\Event;
+use App\Models\User;
 use App\RecurrenceType;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -80,11 +83,11 @@ class EventController extends Controller
         $this->authorize('view', $event);
         $event->load(['dateOptions.availabilities.user', 'createdBy']);
 
-        if (Auth::check()) {
-            return Inertia::render('events/show', compact('event'));
-        }
-
-        return Inertia::render('events/show-guest', compact('event'));
+        return Inertia::render('events/show', [
+            'event' => $event,
+            'guestId' => session('user_id'),
+            'guestName' => session('name'),
+        ]);
     }
 
     public function edit(Event $event): Response
@@ -100,7 +103,7 @@ class EventController extends Controller
     {
         $validated = $request->validated();
         $recurrenceType = $validated['recurrence_type'] ?? null;
-        $shouldResetLastMaterialized = $event->recurrence_type !== $recurrenceType
+        $shouldResetLastDuplicated = $event->recurrence_type !== $recurrenceType
             || $event->recurrence_ends_at !== ($validated['recurrence_ends_at'] ?? null);
 
         $event->update([
@@ -113,7 +116,7 @@ class EventController extends Controller
         ]);
 
         if (isset($validated['date_options'])) {
-            $shouldResetLastMaterialized = true;
+            $shouldResetLastDuplicated = true;
             foreach ($validated['date_options'] as $option) {
                 if ($option['deleted'] ?? false) {
                     $event->dateOptions()->where('date', Carbon::parse($option['date'])->format('Y-m-d'))->delete();
@@ -126,9 +129,11 @@ class EventController extends Controller
             }
         }
 
-        if ($recurrenceType && $shouldResetLastMaterialized) {
-            $event->update(['recurrence_last_materialized_at' => null]);
+        if ($recurrenceType && $shouldResetLastDuplicated) {
+            $event->update(['recurrence_last_duplicated_at' => null]);
         }
+
+        event(new EventEditEvent($event));
 
         return redirect()->route('events.show', $event)->with('success', 'Event updated successfully');
     }
@@ -137,8 +142,6 @@ class EventController extends Controller
     {
         $this->authorize('delete', $event);
 
-        $event->availabilities()->delete();
-        $event->dateOptions()->delete();
         $event->delete();
 
         return redirect()->route('events.index')->with('success', 'Event deleted successfully');
@@ -156,11 +159,29 @@ class EventController extends Controller
         return redirect()->route('events.show', $event)->with('success', 'Created share link successfully');
     }
 
-    public function overview(Event $event): Response
+    public function overview(Event $event): RedirectResponse | Response
     {
         $this->authorize('view', $event);
         $event->load(['dateOptions.availabilities.user', 'createdBy']);
 
+        if (!Auth::check() && !session('user_id')) {
+            return redirect()->route('events.guest.show', $event);
+        }
+
         return Inertia::render('events/overview', compact('event'));
+    }
+
+    public function join(JoinRequest $request, Event $event): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
+
+        session(['user_id' => $user->id, 'name' => $validated['name']]);
+
+        return redirect()->route('events.guest.show', $event)->with('success', 'Joined event successfully');
     }
 }
