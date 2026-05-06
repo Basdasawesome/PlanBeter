@@ -53,6 +53,20 @@ composer run dev
 
 Open daarna de app via `http://localhost:8000`.
 
+### Laravel Reverb starten (voor live updates)
+Voor WebSocket live updates moet Reverb in een aparte terminal draaien:
+
+```bash
+php artisan reverb:start
+```
+
+Gebruik dus tijdens development twee terminals:
+- Terminal 1: `composer run dev`
+- Terminal 2: `php artisan reverb:start`
+
+> [!NOTE]
+Laravel Reverb hoeft niet aan te staan om het project te laten werken maar dan werken de live updates van de WebSocket niet
+
 ### Tests
 
 ```bash
