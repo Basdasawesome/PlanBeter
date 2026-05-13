@@ -131,6 +131,7 @@ export default function Create({ groups, recurrenceTypes }: { groups: Group[], r
                                                 <SelectItem key={type} value={type}>{type}</SelectItem>
                                             ))}
                                             <SelectItem value="no">No</SelectItem>
+                                            <SelectItem value="elk_kwartaal">Custom</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <InputError message={errors.group_id} />

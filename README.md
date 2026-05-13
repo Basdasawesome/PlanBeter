@@ -69,6 +69,16 @@ Laravel Reverb hoeft niet aan te staan om het project te laten werken maar dan w
 
 ### Tests
 
+Zorg ervoor dat de waardes in de [`phpunit.xml`](/phpunit.xml) goed staan. Belangerijk is dat de database gebruikt kan worden:
+
+```xml
+<env name="DB_DATABASE" value="laravel_test"/>
+<env name="DB_USERNAME" value="USERNAME"/>
+<env name="DB_PASSWORD" value="PASSWORD"/>
+```
+
+run de tests met de commando:
+
 ```bash
-php artisan test --compact
+php artisan test
 ```

@@ -1,5 +1,7 @@
 <?php
 
+require __DIR__.'/Feature/Events/helpers.php';
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
